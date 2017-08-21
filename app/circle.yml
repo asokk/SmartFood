@@ -1,0 +1,26 @@
+
+# Build configuration for Circle CI
+machine:
+  environment:
+    _JAVA_OPTIONS: "-Xms1024m -Xmx2048m"
+
+dependencies:
+  pre:
+    - echo y | android update sdk --no-ui --all --filter android-25,build-tools-23.0.3,extra-android-m2repository
+
+test:
+  override:
+    - ./gradlew testDebugUnitTest
+
+deployment:
+  staging: # just a label; label names are completely up to you
+    branch: /^\d+-\d+-\d+$/
+    commands:
+      - ./gradlew publishApkStaging incrementVersionCode
+  testing:
+    branch: /^((?!master$|\d+-\d+-\d+).)*$/
+
+  production:
+    branch: master
+    commands:
+      - ./gradlew publishApkRelease incrementVersionCode
