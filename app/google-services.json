@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "928645423491",
+    "firebase_url": "https://smartfood-ac86f.firebaseio.com",
+    "project_id": "smartfood-ac86f",
+    "storage_bucket": "smartfood-ac86f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928645423491:android:1009c1af18626120",
+        "android_client_info": {
+          "package_name": "com.github.ramonrabello.smartfood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "928645423491-t2uk9ambtsk1pp9tdbe0ciu8g3oi57vs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.ramonrabello.smartfood",
+            "certificate_hash": "abde27b203c9992818de834fc1df71dae4f10fa5"
+          }
+        },
+        {
+          "client_id": "928645423491-j1asnda8jld5kkq23l005cacqaluk1fi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDn7yeIVikhWekjKgX7x-t3coxUf0NUFwg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "928645423491-j1asnda8jld5kkq23l005cacqaluk1fi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

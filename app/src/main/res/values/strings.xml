@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">SmartFood</string>
+    <string name="title_home">Lanches</string>
+    <string name="title_dashboard">Promoções</string>
+    <string name="title_notifications">Meu Pedido</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="order_total_price">Total do pedido: %2.2d</string>
+</resources>
