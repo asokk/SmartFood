@@ -1,7 +1,12 @@
 package com.github.ramonrabello.smartfood.promo
 
-import com.github.ramonrabello.smartfood.shared.repository.remote.Api
+import android.util.Log
+import com.github.ramonrabello.smartfood.shared.repository.cache.Repository
+import com.github.ramonrabello.smartfood.snacks.SnackWrapper
 import com.github.ramonrabello.smartfood.snacks.SnacksContract
+import com.github.ramonrabello.smartfood.snacks.SnacksLocalRepository
+import com.github.ramonrabello.smartfood.snacks.SnacksRemoteRepository
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -11,26 +16,40 @@ import io.reactivex.schedulers.Schedulers
  */
 class SnacksPresenter(private val view: SnacksContract.View) : SnacksContract.Presenter {
 
-    lateinit var disposable:Disposable
+    lateinit var concatObservable: Disposable
+    var snacksLocalRepository: Repository<SnackWrapper> = SnacksLocalRepository()
+    var snacksRemoteRepository: Repository<SnackWrapper> = SnacksRemoteRepository()
 
     override fun loadSnacks() {
-        disposable = Api.get().snacks()
-                .subscribeOn(Schedulers.io())
+
+        // try to load from local cache
+        val localRepositoryObservable = snacksLocalRepository.query()
+                .filter { snackWrapper -> snackWrapper.snacks.isNotEmpty() }
+                .subscribeOn(Schedulers.computation())
+
+        // load from remote repository and save data to local repository
+        val remoteRepositoryObservable = snacksRemoteRepository.query()
+                .map { snackWrapper ->
+                    Observable.create<SnackWrapper> { subscriber ->
+                        snacksLocalRepository.add(snackWrapper)
+                        subscriber.onComplete()
+                    }.subscribeOn(Schedulers.computation()).subscribe()
+                }.subscribeOn(Schedulers.io())
+
+        // concatenate observables from local and remote repository
+        concatObservable = Observable.concat(localRepositoryObservable, remoteRepositoryObservable)
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(
-                { snacks ->
-                    if (!snacks.isEmpty()) {
-                        view.hideProgress()
-                        view.showSnacks(snacks)
-                    } else {
-                        view.showEmptySnacks()
-                    }
+                { snackWrapper ->
+                    view.showSnacks(snackWrapper as SnackWrapper)
                 },
-                { _ ->
+                {
+                    error ->
+                    Log.e("SnacksPresenter", "error occurred: ${error.message}")
                     view.notifyLoadingError()
                 })
     }
 
     override fun dispose() {
-        disposable.dispose()
+        concatObservable.dispose()
     }
 }

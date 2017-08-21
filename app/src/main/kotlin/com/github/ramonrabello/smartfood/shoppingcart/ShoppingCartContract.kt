@@ -22,7 +22,8 @@ interface ShoppingCartContract {
      *
      */
     interface View : BaseView{
-        fun showItems(items: List<Item>)
+        fun showItems(items: List<ExtraResponse>)
+        fun updateTotalPrice(items: List<ExtraResponse>)
         fun showEmptyShoppingCart()
     }
 }

@@ -21,7 +21,7 @@ interface SnacksContract {
      *
      */
     interface View : BaseView {
-        fun showSnacks(snacks:List<Snack>)
+        fun showSnacks(snackWrapper: SnackWrapper)
         fun showEmptySnacks()
     }
 }

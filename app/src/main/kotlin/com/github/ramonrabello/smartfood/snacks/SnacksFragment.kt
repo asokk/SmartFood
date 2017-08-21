@@ -44,9 +44,9 @@ class SnacksFragment : Fragment(), SnacksContract.View {
         presenter.loadSnacks()
     }
 
-    override fun showSnacks(snacks: List<Snack>) {
+    override fun showSnacks(snackWrapper: SnackWrapper) {
         recyclerView.apply {
-            adapter = SnackAdapter(snacks)
+            adapter = SnackAdapter(snackWrapper.snacks)
             layoutManager = LinearLayoutManager(context)
             visibility = View.VISIBLE
         }

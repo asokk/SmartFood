@@ -1,15 +1,12 @@
 package com.github.ramonrabello.smartfood.shoppingcart
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.ramonrabello.smartfood.R
-import com.github.ramonrabello.smartfood.shared.model.Item
-import com.github.ramonrabello.smartfood.snacks.SnacksContract
+import kotlinx.android.synthetic.main.fragment_my_order.*
 
 /**
  * Created by ramonrabello on 20/08/17.
@@ -24,32 +21,38 @@ class ShoppingCartFragment : Fragment(), ShoppingCartContract.View {
 
     override fun onResume() {
         super.onResume()
-        //presenter = Shop
+        presenter = ShoppingCartPresenter(this)
         presenter.loadAllItems()
     }
 
+    override fun showItems(items: List<ExtraResponse>) {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun updateTotalPrice(items: List<ExtraResponse>) {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun showProgress() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        progressBar.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
     }
 
     override fun hideProgress() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        progressBar.visibility = View.GONE
+        recyclerView.visibility = View.VISIBLE
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? = // Inflate the layout for this fragment
             inflater.inflate(R.layout.fragment_shopping_cart, container, false)
 
-    override fun showItems(items: List<Item>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun showEmptyShoppingCart() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun notifyLoadingError() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun onStop() {
