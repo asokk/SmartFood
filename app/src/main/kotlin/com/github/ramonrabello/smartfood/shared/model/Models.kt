@@ -3,7 +3,7 @@ package com.github.ramonrabello.smartfood.shared.model
 /**
  * Models of the app.
  */
-abstract class Item(id:Int, name:String, image:String){
+abstract class Item(var id:Int, var name:String, var image:String){
     lateinit var price:Price
     var quantity = 0
 }
