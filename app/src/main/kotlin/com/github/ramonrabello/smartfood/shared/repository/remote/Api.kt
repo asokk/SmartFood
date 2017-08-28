@@ -1,22 +1,25 @@
 package com.github.ramonrabello.smartfood.shared.repository.remote
 
+import com.github.ramonrabello.smartfood.BuildConfig
 import com.google.gson.GsonBuilder
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 /**
- * Created by ramonrabello on 20/08/17.
+ * Singleton class to return Retrofit instance.
  */
 object Api {
-    val BASE_URL:String = "http://192.168.0.5:8080"
-    var retrofit:Retrofit
-    init {
-        retrofit = Retrofit.Builder().baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
-    }
+    var retrofit:Retrofit = Retrofit.Builder()
+            .client(OkHttpClient.Builder()
+                    .readTimeout(60000, TimeUnit.MILLISECONDS)
+                    .connectTimeout(60000, TimeUnit.MILLISECONDS).build())
+            .baseUrl(BuildConfig.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
 
     fun get(): SmartFoodEndpoint = retrofit.create(SmartFoodEndpoint::class.java)
 }

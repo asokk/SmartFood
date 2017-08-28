@@ -8,8 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.ramonrabello.smartfood.R
-import com.github.ramonrabello.smartfood.promo.Snack
-import com.github.ramonrabello.smartfood.promo.SnacksPresenter
 import kotlinx.android.synthetic.main.fragment_snacks.progressBar
 import kotlinx.android.synthetic.main.fragment_snacks.recyclerView
 
@@ -44,9 +42,9 @@ class SnacksFragment : Fragment(), SnacksContract.View {
         presenter.loadSnacks()
     }
 
-    override fun showSnacks(snackWrapper: SnackWrapper) {
+    override fun showSnacks(snackList: List<SnackModel>) {
         recyclerView.apply {
-            adapter = SnackAdapter(snackWrapper.snacks)
+            adapter = SnackAdapter(snackList)
             layoutManager = LinearLayoutManager(context)
             visibility = View.VISIBLE
         }

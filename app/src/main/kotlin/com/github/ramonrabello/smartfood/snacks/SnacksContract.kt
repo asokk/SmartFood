@@ -1,6 +1,5 @@
 package com.github.ramonrabello.smartfood.snacks
-
-import com.github.ramonrabello.smartfood.promo.Snack
+import com.github.ramonrabello.smartfood.snacks.Snack
 import com.github.ramonrabello.smartfood.shared.presentation.BasePresenter
 import com.github.ramonrabello.smartfood.shared.presentation.BaseView
 
@@ -21,7 +20,7 @@ interface SnacksContract {
      *
      */
     interface View : BaseView {
-        fun showSnacks(snackWrapper: SnackWrapper)
+        fun showSnacks(snackList: List<SnackModel>)
         fun showEmptySnacks()
     }
 }

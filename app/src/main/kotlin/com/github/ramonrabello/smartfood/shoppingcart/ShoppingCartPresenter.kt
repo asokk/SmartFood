@@ -39,6 +39,8 @@ class ShoppingCartPresenter(private val view: ShoppingCartContract.View) : Shopp
 
     override fun removeItem(item: Item) {}
     override fun dispose() {
-        disposable.dispose()
+        if (!disposable.isDisposed){
+            disposable.dispose()
+        }
     }
 }

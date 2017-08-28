@@ -1,55 +1,58 @@
-package com.github.ramonrabello.smartfood.promo
+package com.github.ramonrabello.smartfood.snacks
 
-import android.util.Log
-import com.github.ramonrabello.smartfood.shared.repository.cache.Repository
-import com.github.ramonrabello.smartfood.snacks.SnackWrapper
-import com.github.ramonrabello.smartfood.snacks.SnacksContract
-import com.github.ramonrabello.smartfood.snacks.SnacksLocalRepository
-import com.github.ramonrabello.smartfood.snacks.SnacksRemoteRepository
+import android.content.Context
+import com.github.ramonrabello.smartfood.ingredients.Ingredient
+import com.github.ramonrabello.smartfood.shared.repository.remote.Api
 import io.reactivex.Observable
+import io.reactivex.ObservableSource
+import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
  * SnacksPresenter responsible to load all snacks features from REST API calls.
  */
-class SnacksPresenter(private val view: SnacksContract.View) : SnacksContract.Presenter {
+class SnacksPresenter(private val context: Context, private val view: SnacksContract.View) : SnacksContract.Presenter {
 
-    lateinit var concatObservable: Disposable
-    var snacksLocalRepository: Repository<SnackWrapper> = SnacksLocalRepository()
-    var snacksRemoteRepository: Repository<SnackWrapper> = SnacksRemoteRepository()
+    var snacksLocalRepository = SnacksLocalRepository(context)
+    var snacksRemoteRepository = SnacksRemoteRepository()
 
     override fun loadSnacks() {
 
-        // try to load from local cache
         val localRepositoryObservable = snacksLocalRepository.query()
-                .filter { snackWrapper -> snackWrapper.snacks.isNotEmpty() }
+                .filter { snacks -> snacks.isNotEmpty() }
                 .subscribeOn(Schedulers.computation())
 
-        // load from remote repository and save data to local repository
         val remoteRepositoryObservable = snacksRemoteRepository.query()
-                .map { snackWrapper ->
-                    Observable.create<SnackWrapper> { subscriber ->
-                        snacksLocalRepository.add(snackWrapper)
+                .map { snackModel ->
+                    Observable.create<SnackModel> { subscriber ->
+                        snacksLocalRepository.add(snackModel)
                         subscriber.onComplete()
                     }.subscribeOn(Schedulers.computation()).subscribe()
                 }.subscribeOn(Schedulers.io())
 
         // concatenate observables from local and remote repository
-        concatObservable = Observable.concat(localRepositoryObservable, remoteRepositoryObservable)
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(
-                { snackWrapper ->
-                    view.showSnacks(snackWrapper as SnackWrapper)
-                },
-                {
-                    error ->
-                    Log.e("SnacksPresenter", "error occurred: ${error.message}")
-                    view.notifyLoadingError()
-                })
+        val concatObservable = Observable.concat(localRepositoryObservable, remoteRepositoryObservable)
+//                .flatMap { snacks -> snacks }
+//        concatObservable.subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                        {snacks -> },
+//                        {onError -> })
+
+//        (localRepositoryObservable, remoteRepositoryObservable)
+//
+//                .subscribe(
+//                        { onNext->
+//                            view.showSnacks(onNext)
+//
+//        })
     }
 
     override fun dispose() {
-        concatObservable.dispose()
+        //concatObservable.()
     }
 }

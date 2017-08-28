@@ -6,15 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.github.ramonrabello.smartfood.R
-import com.github.ramonrabello.smartfood.promo.Promotion
-import com.github.ramonrabello.smartfood.promo.Snack
 import com.github.ramonrabello.smartfood.shared.BaseViewHolder
 import kotlinx.android.synthetic.main.snack_view_holder.view.*
 
 /**
  * Adapter to load snacks available.
  */
-class SnackAdapter(private var snacks:List<Snack>) : RecyclerView.Adapter<SnackAdapter.SnackViewHolder>() {
+class SnackAdapter(private var snacks:List<SnackModel>) : RecyclerView.Adapter<SnackAdapter.SnackViewHolder>() {
 
     override fun getItemCount() = snacks.size
 
@@ -26,10 +24,11 @@ class SnackAdapter(private var snacks:List<Snack>) : RecyclerView.Adapter<SnackA
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): SnackViewHolder =
             SnackViewHolder(LayoutInflater.from(parent?.context).inflate(R.layout.snack_view_holder, parent, false))
 
-    class SnackViewHolder(itemView: View) : BaseViewHolder<Snack>(itemView) {
-        override fun bind(model: Snack) {
+    class SnackViewHolder(itemView: View) : BaseViewHolder<SnackModel>(itemView) {
+        override fun bind(model: SnackModel) {
             itemView.snackName.text = model.name
-            itemView.snackIngredients.text = model.ingredientIds.toString()
+            itemView.snackPrice.text = model.getPrice().toString()
+            itemView.snackIngredients.text = model.getIngredientsDescription()
             Glide.with(itemView.context).load(model.image).into(itemView.snackImage)
         }
     }

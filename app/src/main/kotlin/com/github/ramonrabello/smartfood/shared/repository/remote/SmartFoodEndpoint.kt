@@ -1,12 +1,12 @@
 package com.github.ramonrabello.smartfood.shared.repository.remote
 
+import com.github.ramonrabello.smartfood.ingredients.Ingredient
 import com.github.ramonrabello.smartfood.promo.Promotion
-import com.github.ramonrabello.smartfood.promo.Snack
 import com.github.ramonrabello.smartfood.shoppingcart.ExtraResponse
-import com.github.ramonrabello.smartfood.snacks.Ingredient
-import com.github.ramonrabello.smartfood.snacks.SnackWrapper
-import io.reactivex.Flowable
+import com.github.ramonrabello.smartfood.snacks.Snack
+import com.github.ramonrabello.smartfood.snacks.SnackModel
 import io.reactivex.Observable
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PUT
@@ -18,19 +18,19 @@ import retrofit2.http.Path
 interface SmartFoodEndpoint {
 
     @GET("/api/promocao")
-    fun promotions():Observable<List<Promotion>>
+    fun promotions(): Observable<List<Promotion>>
 
     @GET("/api/lanche")
-    fun snacks(): Observable<List<Snack>>
+    fun snacks(): Call<List<Snack>>
 
     @GET("/api/lanche/{snack_id}")
-    fun snack(snackId:Int):Flowable<Snack>
+    fun snack(snackId:Int):Observable<SnackModel>
 
     @GET("/api/ingrediente")
-    fun ingredients():Observable<List<Ingredient>>
+    fun ingredients():Call<List<Ingredient>>
 
     @GET("/api/ingrediente/de/{snack_id}")
-    fun ingredientsOf(@Path("snack_id") snackId:Int):Flowable<List<Ingredient>>
+    fun ingredientsOf(@Path("snack_id") snackId:Int):Observable<List<Ingredient>>
 
     @GET("/api/pedido")
     fun currentOrder():Observable<List<ExtraResponse>>

@@ -1,74 +1,76 @@
 package com.github.ramonrabello.smartfood.snacks
 
+import android.content.Context
 import android.util.Log
-import com.github.ramonrabello.smartfood.promo.Snack
-import com.github.ramonrabello.smartfood.shared.repository.Specification
 import com.github.ramonrabello.smartfood.shared.repository.cache.Repository
-import com.google.firebase.database.*
-import io.reactivex.Flowable
-import io.reactivex.FlowableEmitter
-import io.reactivex.FlowableOnSubscribe
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import io.realm.Realm
+import io.realm.RealmConfiguration
+import java.util.*
 
 /**
  * Created by ramonrabello on 21/08/17.
  */
-class SnacksLocalRepository : Repository<SnackWrapper> {
+class SnacksLocalRepository(val context: Context) : Repository<SnackModel> {
 
-    // Write a message to the database
-    var database = FirebaseDatabase.getInstance()
-    var myRef = database.getReference("smartfood-ac86f")
-    lateinit var disposable:Disposable
+    var realmConfig = RealmConfiguration.Builder(context).build()
+    var realm = Realm.getInstance(realmConfig)
+    var snackRealmToSnackMapper = SnackRealmToSnackMapper()
+    lateinit var disposable: Disposable
 
-    override fun add(item: SnackWrapper) {
-        myRef.setValue(item.snacks)
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun add(item: SnackModel) {
+        val snackRealm = SnackRealm()
+        snackRealm.apply {
+            id = item.id
+            name = item.name
+            price = item.getPrice()
+            image = item.image
+        }
+
+        realm.beginTransaction()
+        realm.copyToRealm(snackRealm)
+        realm.commitTransaction()
     }
 
-    override fun add(items: Iterable<SnackWrapper>) {
-        for (item in items){
-            myRef.setValue(item.snacks)
+    override fun add(items: Iterable<SnackModel>) {
+        for (item in items) {
+            add(item)
         }
     }
 
-    override fun update(item: SnackWrapper) {
+    override fun update(item: SnackModel) {
+        val snackRealm: SnackRealm? = realm.where(SnackRealm::class.java).equalTo(SnackRealm.Fields.ID, item.id).findFirst()
 
+        snackRealm?.apply {
+            id = item.id
+            name = item.name
+            price = item.getPrice()
+            image = item.image
+        }
+        realm.apply {
+            beginTransaction()
+            copyToRealm(snackRealm)
+            commitTransaction()
+        }
     }
 
-    override fun remove(item: SnackWrapper) {
-
+    override fun remove(item: SnackModel) {
+        throw IllegalAccessException("Remove function not implemented.")
     }
 
-    override fun query(): Observable<SnackWrapper> = //        // Read from the database
-//        val snacks:MutableList<SnackWrapper> = ArrayList()
-//        myRef.addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                //List messages = snapshot.getValue(t);
-//                if( messages === null ) {
-//                    System.out.println('No messages');
-//                }
-//                else {
-//                    System.out.println("The first message is: " + messages.get(0) );
-//                }
-//                snacks.add(snackWrapper)
-//                Log.d("TAG","Value is: ${value}")
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                // Failed to read value
-//                Log.w("TAG", "Failed to read value.", error.toException())
-//            }
-//        })
-//
-//        disposable = Observable.just(snacks)
-//                .subscribeOn(Schedulers.computation()).subscribe()
-//        )
-            Observable.empty()
+    override fun query(): Observable<List<SnackModel>> {
+        val snacksList = Collections.emptyList<SnackModel>()
+
+        val snacksRealmList = realm.where(SnackRealm::class.java).findAll()
+        snacksRealmList.forEach { snackRealm -> snacksList.add(snackRealmToSnackMapper.map(snackRealm)) }
+        return Observable.fromArray(snacksList)
+    }
+
+    override fun queryById(id: Int): Observable<SnackModel> {
+        val snackRealm: SnackRealm = realm.where(SnackRealm::class.java).equalTo(SnackRealm.Fields.ID, id).findFirst()
+        return Observable.just(snackRealmToSnackMapper.map(snackRealm))
+    }
 
     override fun close() {
         disposable.dispose()

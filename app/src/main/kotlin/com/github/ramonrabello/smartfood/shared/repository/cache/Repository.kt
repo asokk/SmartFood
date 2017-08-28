@@ -11,6 +11,7 @@ interface Repository<T> {
     fun add(items: Iterable<T>)
     fun update(item:T)
     fun remove(item:T)
-    fun query():Observable<T>
+    fun query():Observable<List<T>>
+    fun queryById(id:Int):Observable<T>
     fun close()
 }
